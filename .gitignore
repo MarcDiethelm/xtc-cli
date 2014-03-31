@@ -1,0 +1,9 @@
+# syntax: http://git-scm.com/docs/gitignore
+
+# App
+/node_modules
+/cache
+
+# System
+.idea
+.DS_Store
