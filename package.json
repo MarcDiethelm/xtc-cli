@@ -1,7 +1,7 @@
 {
   "name": "xtc-cli",
   "version": "0.0.1",
-  "description": "xtc command line tool",
+  "description": "xtc framework command line tool",
   "bin": {
     "xtc": "./bin/xtc-cli.js"
   },
