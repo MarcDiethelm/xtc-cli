@@ -48,30 +48,36 @@ function handleArguments(env) {
 		process.exit(0);
 	}
 
+
 	/*if (process.cwd() !== env.cwd) {
 		process.chdir(env.cwd);
 		console.log('Working directory changed to', c.magenta(env.cwd));
 	}*/
+
 
 	else if ('help' === command || !command) {
 		log(c.magenta('\nxtc help\n'));
 	}
 
 
-	else if ('setup' === command) { // TODO: refactor this with promises and modules
-		log(c.magenta('\nxtc setup\n'));
+	else if ('install' === command) { // TODO: refactor this with promises and modules
+		log(c.magenta('\nxtc install\n'));
 
 		var config = {};
 
 		inquirer.prompt([
 			{
-				type : "input",
-				name : "projectPath",
-				message : "Your project will be set up in",
-				default: env.cwd
+				type : 'confirm',
+				name : 'IsPathOk',
+				message : 'Your project will be set up in ' +env.cwd +' Ok?',
+				default: true
 			}
 		], function( answers ) {
-			config.projectPath = answers.projectPath;
+			//config.projectPath = answers.projectPath;
+			if (!answers.IsPathOk) {
+				log('Change to the desired directory and try again.');
+				process.exit(0);
+			}
 
 			// get list of xtc versions from npm
 			u.pkgInfo('xtc', function(versions) {
@@ -85,9 +91,9 @@ function handleArguments(env) {
 
 				inquirer.prompt([
 					{
-						type : "list",
-						name : "xtcVersion",
-						message : "Choose a  version to install",
+						type : 'list',
+						name : 'xtcVersion',
+						message : 'Choose a  version to install',
 						paginated : true,
 						default: 0,
 						choices : choices
@@ -109,6 +115,8 @@ function handleArguments(env) {
 						expectStr = 'xtc@'+ config.xtcVersion +' node_modules/xtc';
 					}
 
+					// npm install xtc@version (versioned generator is in xtc's dependencies)
+
 					var nexpect = require('nexpect');
 
 					log(c.magenta('\nInstalling xtc module %s...\n'), config.xtcVersion);
@@ -122,7 +130,6 @@ function handleArguments(env) {
 								process.exit(1);
 							}
 							log(c.cyan('\nxtc module installed successfully'));
-							//log(c.magenta('\nStarting project setup...\n'));
 
 							try {
 								require('fs').symlinkSync(path.join(process.cwd(), 'node_modules/xtc/node_modules/generator-xtc'), path.join(process.cwd(), 'node_modules/generator-xtc'), 'dir');
@@ -135,7 +142,22 @@ function handleArguments(env) {
 								}
 							}
 
-							log(c.magenta('\nyo xtc\t\tto start the project generator.\n'));
+							// run generator
+
+							log(c.magenta('\nStarting project setup...\n'));
+
+							//log(c.magenta('\nyo xtc\t\tto start the project generator.\n'));
+
+							require('child_process')
+								.spawn('yo', ['xtc', '--path='+path.dirname(env.modulePath)], {
+									stdio: 'inherit'
+								})
+								.on('exit', function (code) {
+									if (code !== 0) {
+										console.log(c.magenta('I think something went wrong...'));
+									}
+									process.exit(code);
+								});
 
 							/*nexpect.spawn('yo', ['xtc'], { verbose: true })
 								.expect('')
@@ -151,7 +173,6 @@ function handleArguments(env) {
 									process.exit(0);
 								})
 							;*/
-
 						})
 					;
 
@@ -165,6 +186,23 @@ function handleArguments(env) {
 			});
 
 		});
+	}
+
+
+	else if ('setup' === command) {
+
+		log(c.magenta('\nlaunching project setup...\n'));
+
+		require('child_process')
+			.spawn('yo', ['xtc', '--path='+path.dirname(env.modulePath)], {
+				stdio: 'inherit'
+			})
+			.on('exit', function (code) {
+				if (code !== 0) {
+					console.log(c.magenta('I think something went wrong...'));
+				}
+				process.exit(code);
+			});
 	}
 
 
