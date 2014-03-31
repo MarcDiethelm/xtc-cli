@@ -165,48 +165,55 @@ function handleArguments(env) {
 			});
 
 		});
-
-		// create a temporary package.json
-
-		// npm install xtc@version (versioned generator is in xtc's dependencies)
-
-		// run generator (generator replaces package.json)
 	}
+
 
 	else if ('build' === command) {
 		//u.checkLocalXtc(env);
 
 		if (!argv.dist) {
-			log(c.magenta('launching xtc dev build...'))
+			log(c.magenta('launching xtc dev build...'));
 		}
 		else if (argv.dist === true) {
-			log(c.magenta('launching xtc dist build...'))
+			log(c.magenta('launching xtc dist build...'));
 		}
 		log(c.magenta('build location: %s'), env.cwd);
 		process.exit(0);
 	}
 
+
 	else if ('mkmod' === command) {
+
+		//var moduleNames = args;
+
 		u.checkLocalXtc(env);
 
-		var moduleNames = args;
-
-		log('creating new modules', moduleNames);
-		log(c.magenta('location: %s'), env.cwd);
-		process.exit(0);
+		require('child_process')
+			.spawn('yo', ['xtc:module', '--path='+path.dirname(env.modulePath)], {
+				stdio: 'inherit'
+			})
+			.on('exit', function (code) {
+				process.exit(code);
+			})
+		;
 	}
+
 
 	else if ('mkskin' === command) {
-		//u.checkLocalXtc(env);
 
-		var skinNames = env.argv._.slice(1);
+		//var skinNames = args;
 
-		log('creating new modules', moduleNames);
-		log(c.magenta('location: %s'), env.cwd);
-		process.exit(0);
+		u.checkLocalXtc(env);
+
+		require('child_process')
+			.spawn('yo', ['xtc:skin', '--path='+path.dirname(env.modulePath)], {
+				stdio: 'inherit'
+			})
+			.on('exit', function (code) {
+				process.exit(code);
+			})
+		;
 	}
-
-	//log(argv);
 }
 
 
@@ -216,7 +223,5 @@ function handleArguments(env) {
 var cli = new Liftoff({
 	name: 'xtc'
 });
-
-//log(c.magenta('xtc cli'))
 
 cli.launch(handleArguments);
