@@ -148,7 +148,7 @@ function handleArguments(env) {
 		.action(function(cmd) {
 
 			require('child_process')
-				.spawn('yo', ['xtc', '--path='+path.dirname(env.modulePath)], {
+				.spawn('yo', ['xtc'], {
 					stdio: 'inherit'
 				})
 				.on('exit', function (code) {
@@ -187,7 +187,8 @@ function handleArguments(env) {
 					var choices = versions.slice();
 
 					choices.unshift(new inquirer.Separator());
-					choices.push(new inquirer.Separator(), '#develop branch', new inquirer.Separator(), 'tarball', new inquirer.Separator());
+					choices.push(new inquirer.Separator(), '#develop branch', new inquirer.Separator());
+					//choices.push('tarball', new inquirer.Separator());
 
 					// let the user choose the version to install. default to latest
 
@@ -209,10 +210,10 @@ function handleArguments(env) {
 						if (config.xtcVersion == '#develop branch') {
 							xtcInstallArg = 'git://github.com/marcdiethelm/xtc.git#develop';
 							expectStr = 'xtc@';
-						} else if (config.xtcVersion == 'tarball') { // todo: need a prompt for tarball location
-							xtcInstallArg = '/Users/marc/projects/xtc/xtc-0.8.0-beta6.tgz';
+						} /*else if (config.xtcVersion == 'tarball') { // todo: need a prompt for tarball location
+							xtcInstallArg = '/Users/marc/projects/xtc-0.8.0-beta6.tgz';
 							expectStr = 'xtc@';
-						} else {
+						}*/ else {
 							xtcInstallArg = 'xtc@'+ config.xtcVersion;
 							expectStr = 'xtc@'+ config.xtcVersion +' node_modules/xtc';
 						}
@@ -233,19 +234,6 @@ function handleArguments(env) {
 								}
 								log(c.cyan('\nxtc module installed successfully'));
 
-								// Must symlink the generator from xtc's modules up to the project's modules.
-								// Else Yeoman won't find it.
-								try {
-									require('fs').symlinkSync(path.join(process.cwd(), 'node_modules/xtc/node_modules/generator-xtc'), path.join(process.cwd(), 'node_modules/generator-xtc'), 'dir');
-								} catch (e) {
-									if (e.code === 'EEXIST') {
-										console.info(c.grey('generator-xtc already linked to node_modules'));
-									}
-									else {
-										throw e;
-									}
-								}
-
 								// run generator
 
 								log(c.magenta('\nStarting project setup...\n'));
@@ -258,7 +246,7 @@ function handleArguments(env) {
 									})
 									.on('exit', function (code) {
 										if (code !== 0) {
-											console.log(c.magenta('I think something went wrong...'));
+											console.log(c.magenta('\nI think something went wrong.\n'));
 										}
 										process.exit(code);
 									});
