@@ -236,22 +236,39 @@ function handleArguments(env) {
 								}
 								log(c.cyan('\nxtc module installed successfully'));
 
-								// run generator
+								// bundledDependencies don't have their dependencies installed
+								// https://github.com/npm/npm/issues/2442
+								// need to do that ourselves
 
-								log(c.magenta('\nStarting project setup...\n'));
+								log(c.magenta('\nInstalling generator-xtc dependencies...\n'));
 
-								//log(c.magenta('\nyo xtc\t\tto start the project generator.\n'));
-
-								require('child_process')
-									.spawn('yo', ['xtc'], {
-										stdio: 'inherit'
-									})
-									.on('exit', function (code) {
-										if (code !== 0) {
-											console.log(c.magenta('\nI think something went wrong.\n'));
+								nexpect.spawn('npm', ['install'], { verbose: true, cwd: './node_modules/generator-xtc' })
+									.expect('chalk@')// todo: Hmmmm.
+									.run(function (err, stdout, exitcode) {
+										if (err) {
+											// todo
+											throw err;
+											process.exit(1);
 										}
-										process.exit(code);
+										log(c.cyan('\ngenerator-xtc dependencies installed successfully'));
+
+										// run generator
+
+										log(c.magenta('\nStarting project setup...\n'));
+
+										require('child_process')
+											.spawn('yo', ['xtc'], {
+												stdio: 'inherit'
+											})
+											.on('exit', function (code) {
+												if (code !== 0) {
+													console.log(c.magenta('\nI think something went wrong.\n'));
+												}
+												process.exit(code);
+											});
+
 									});
+
 							})
 						;
 
