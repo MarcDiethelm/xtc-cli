@@ -163,9 +163,11 @@ function handleArguments(env) {
 	cmdr
 		.command('install') // TODO: refactor this with promises and modules
 		.description('Install xtc and set up a project')
-		.action(function(cmd) {	log(c.magenta('\nxtc install\n'));
+		.action(function(cmd) {
 
 			var config = {};
+
+			log(c.magenta('\nxtc install\n'));
 
 			inquirer.prompt([
 				{
@@ -241,7 +243,7 @@ function handleArguments(env) {
 								//log(c.magenta('\nyo xtc\t\tto start the project generator.\n'));
 
 								require('child_process')
-									.spawn('yo', ['xtc', '--path='+path.dirname(env.modulePath)], {
+									.spawn('yo', ['xtc'], {
 										stdio: 'inherit'
 									})
 									.on('exit', function (code) {
