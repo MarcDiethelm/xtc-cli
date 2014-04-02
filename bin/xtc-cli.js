@@ -268,6 +268,22 @@ function handleArguments(env) {
 		});
 
 
+	/*cmdr
+		.command('update')
+		.description('Update xtc module and create new project files in a folder for safe manual merging.')
+		.action(function(cmd) {
+
+			log('not implemented yet')
+
+			// you have version xx, you can update to versions [xy, xz, ...]
+
+			// npm update xtc module
+
+			// read install config and run a setup with pre-filled defaults (from original/last install)
+			// write files to a new folder project-update-x.y.z for manual merging by the user.
+		});*/
+
+
 	cmdr.parse(process.argv);
 
 
