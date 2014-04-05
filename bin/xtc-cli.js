@@ -183,8 +183,18 @@ function handleArguments(env) {
 					process.exit(0);
 				}
 
+				log('Getting list of xtc versions from npm...');
+
 				// get list of xtc versions from npm
-				u.pkgInfo('xtc', function(versions) {
+				u.pkgInfo('xtc', function(err, versions) {
+
+					if (err) {
+						if (err.message === 'getaddrinfo ENOTFOUND') {
+							log(c.red('\nDNS error. Are you offline?\n'));
+							process.exit(1);
+						}
+						throw err;
+					}
 
 					var choices = versions.slice();
 
