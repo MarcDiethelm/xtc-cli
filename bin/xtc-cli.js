@@ -11,6 +11,7 @@
 var cmdr = require('commander');
 var c = require('chalk');
 var path = require('path');
+var spawn = require('child_process').spawn;
 var inquirer = require('inquirer');
 var Liftoff = require('liftoff');
 var u = require('../lib/xtc-utils.js')
@@ -66,8 +67,7 @@ function handleArguments(env) {
 
 			u.checkLocalXtc(env);
 
-			require('child_process')
-				.spawn('node', [xtcMain], {
+			spawn('node', [xtcMain], {
 					stdio: 'inherit'
 				})
 				.on('exit', function (code) {
@@ -85,9 +85,7 @@ function handleArguments(env) {
 
 			u.checkLocalXtc(env);
 
-			var spawn = require('child_process').spawn
-			   ,grunt
-			;
+			var grunt;
 
 			if (!cmd.dist) {
 				grunt = spawn('grunt', ['--base=./node_modules/xtc'], {
@@ -113,8 +111,7 @@ function handleArguments(env) {
 
 			u.checkLocalXtc(env);
 
-			require('child_process')
-				.spawn('yo', ['xtc:module', '--path='+path.dirname(env.modulePath)], {
+			spawn('yo', ['xtc:module', '--path='+path.dirname(env.modulePath)], {
 					stdio: 'inherit'
 				})
 				.on('exit', function (code) {
@@ -131,8 +128,7 @@ function handleArguments(env) {
 
 			u.checkLocalXtc(env);
 
-			require('child_process')
-				.spawn('yo', ['xtc:skin', '--path='+path.dirname(env.modulePath)], {
+			spawn('yo', ['xtc:skin', '--path='+path.dirname(env.modulePath)], {
 					stdio: 'inherit'
 				})
 				.on('exit', function (code) {
@@ -147,8 +143,7 @@ function handleArguments(env) {
 		.description('Launch project setup')
 		.action(function(cmd) {
 
-			require('child_process')
-				.spawn('yo', ['xtc'], {
+			spawn('yo', ['xtc'], {
 					stdio: 'inherit'
 				})
 				.on('exit', function (code) {
@@ -208,41 +203,36 @@ function handleArguments(env) {
 						{
 							type : 'list',
 							name : 'xtcVersion',
-							message : 'Choose a  version to install',
+							message : 'Choose a version to install',
 							paginated : true,
 							default: 0,
 							choices : choices
 						}
 					], function( answers ) {
-						var xtcInstallArg
-							,expectStr
-						;
+						var xtcInstallArg;
+
 						config.xtcVersion = answers.xtcVersion;
 
 						if (config.xtcVersion == '#develop branch') {
 							xtcInstallArg = 'git://github.com/marcdiethelm/xtc.git#develop';
-							expectStr = 'xtc@';
 						} /*else if (config.xtcVersion == 'tarball') { // todo: need a prompt for tarball location
 							xtcInstallArg = '/Users/marc/projects/xtc-0.8.0-beta6.tgz';
-							expectStr = 'xtc@';
 						}*/ else {
 							xtcInstallArg = 'xtc@'+ config.xtcVersion;
-							expectStr = 'xtc@'+ config.xtcVersion +' node_modules/xtc';
 						}
 
 						// npm install xtc@version (versioned generator is in xtc's dependencies)
 
-						var nexpect = require('nexpect');
-
 						log(c.magenta('\nInstalling xtc module %s...\n'), config.xtcVersion);
 
-						nexpect.spawn('npm', ['install', xtcInstallArg], { verbose: true })
-							.expect(expectStr)
-							.run(function (err, stdout, exitcode) {
-								if (err) {
-									// todo
-									throw err;
-									process.exit(1);
+
+						spawn('npm', ['install', xtcInstallArg], {
+								stdio: 'inherit'
+							})
+							.on('exit', function (code) {
+								if (code !== 0) {
+									console.log(c.magenta('\nI think something went wrong.\n'));
+									process.exit(code);
 								}
 								log(c.cyan('\nxtc module installed successfully'));
 
@@ -252,22 +242,23 @@ function handleArguments(env) {
 
 								log(c.magenta('\nInstalling generator-xtc dependencies...\n'));
 
-								nexpect.spawn('npm', ['install'], { verbose: true, cwd: './node_modules/generator-xtc' })
-									.expect('chalk@')// todo: Hmmmm.
-									.run(function (err, stdout, exitcode) {
-										if (err) {
-											// todo
-											throw err;
-											process.exit(1);
+								spawn('npm', ['install'], {
+										stdio: 'inherit'
+									   ,cwd: './node_modules/generator-xtc'
+									})
+									.on('exit', function (code) {
+										if (code !== 0) {
+											console.log(c.magenta('\nI think something went wrong.\n'));
+											process.exit(code);
 										}
+
 										log(c.cyan('\ngenerator-xtc dependencies installed successfully'));
 
 										// run generator
 
 										log(c.magenta('\nStarting project setup...\n'));
 
-										require('child_process')
-											.spawn('yo', ['xtc'], {
+										spawn('yo', ['xtc'], {
 												stdio: 'inherit'
 											})
 											.on('exit', function (code) {

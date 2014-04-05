@@ -23,7 +23,6 @@
     "commander": "^2.2.0",
     "inquirer": "^0.4.1",
     "liftoff": "^0.9.6",
-    "nexpect": "^0.3.0",
     "npm-pkginfo": "^0.0.3"
   }
 }
