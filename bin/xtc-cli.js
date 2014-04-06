@@ -88,20 +88,17 @@ function handleArguments(env) {
 		.option('-d, --dist', 'Run build in distribution mode. Output is minified.')
 		.action(function(cmd) {
 
+			var xtcArgs = ['--base=./node_modules/xtc']
+				,grunt
+			;
+
 			u.checkLocalXtc(env);
 
-			var grunt;
+			cmd.dist && xtcArgs.push('--dist');
 
-			if (!cmd.dist) {
-				grunt = spawn('grunt', ['--base=./node_modules/xtc'], {
-					stdio: 'inherit'
-				});
-			}
-			else {
-				grunt = spawn('grunt', ['--base=./node_modules/xtc', '--dist'], {
-					stdio: 'inherit'
-				});
-			}
+			grunt = spawn('grunt', xtcArgs, {
+				stdio: 'inherit'
+			});
 
 			grunt.on('exit', function (code) {
 				process.exit(code);
