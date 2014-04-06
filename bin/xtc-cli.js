@@ -63,11 +63,16 @@ function handleArguments(env) {
 	cmdr
 		.command('start')
 		.description('Starts the xtc server')
+		.option('-p, --port [number]', 'Specify the port that xtc should listen to.')
 		.action(function(cmd) {
+
+			var xtcArgs = [xtcMain];
 
 			u.checkLocalXtc(env);
 
-			spawn('node', [xtcMain], {
+			cmd.port && xtcArgs.push('--port='+ cmd.port);
+
+			spawn('node', xtcArgs, {
 					stdio: 'inherit'
 				})
 				.on('exit', function (code) {
