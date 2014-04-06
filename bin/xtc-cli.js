@@ -143,6 +143,8 @@ function handleArguments(env) {
 		.description('Launch project setup')
 		.action(function(cmd) {
 
+			u.checkLocalXtc(env);
+
 			spawn('yo', ['xtc'], {
 					stdio: 'inherit'
 				})
@@ -292,6 +294,8 @@ function handleArguments(env) {
 		.action(function(cmd) {
 
 			log('not implemented yet')
+
+			u.checkLocalXtc(env);
 
 			// you have version xx, you can update to versions [xy, xz, ...]
 
