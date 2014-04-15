@@ -62,7 +62,7 @@ function handleArguments(env) {
 
 	cmdr
 		.command('start')
-		.description('Starts the xtc server')
+		.description('Starts the xtc server. Use `-p [number]` to force a port.')
 		.option('-p, --port [number]', 'Specify the port that xtc should listen to.')
 		.action(function(cmd) {
 
@@ -84,7 +84,7 @@ function handleArguments(env) {
 
 	cmdr
 		.command('build')
-		.description('Start frontend asset build. Run with `--dist` for minified distribution build.')
+		.description('Start frontend asset build. Use `-d` for production build to dist target.')
 		.option('-d, --dist', 'Run build in distribution mode. Output is minified.')
 		.action(function(cmd) {
 

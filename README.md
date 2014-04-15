@@ -29,8 +29,8 @@ outputs this
 
     help                   Shows this usage information
     info                   Information about the project setup
-    start                  Starts the xtc server
-    build [options]        Start frontend asset build. Run with `--dist` for minified distribution build.
+    start [options]        Starts the xtc server. Use `-p [number]` to force a port.
+    build [options]        Start frontend asset build. Use `-d` for production build to dist target.
     mkmod                  Create new Terrific frontend modules
     mkskin                 Create new skins for a Terrific frontend module
     setup                  Launch project setup
