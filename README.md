@@ -3,13 +3,15 @@ xtc-cli
 
 Command line tool for the xtc Frontend framework.
 
+Most commands are interactive.
+
 Installation:
 
 ```shell
 npm install -g xtc-cli
 ```
 
-To install xtc and set up a project. Change to the desired dir.
+To install xtc and set up a project with generator-xtc. Change to the desired dir.
 
 ```shell
 xtc install
