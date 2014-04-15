@@ -113,7 +113,7 @@ function handleArguments(env) {
 
 			u.checkLocalXtc(env);
 
-			spawn('yo', ['xtc:module', '--path='+path.dirname(env.modulePath)], {
+			spawn('yo', ['xtc:module'], {
 					stdio: 'inherit'
 				})
 				.on('exit', function (code) {
@@ -130,7 +130,7 @@ function handleArguments(env) {
 
 			u.checkLocalXtc(env);
 
-			spawn('yo', ['xtc:skin', '--path='+path.dirname(env.modulePath)], {
+			spawn('yo', ['xtc:skin'], {
 					stdio: 'inherit'
 				})
 				.on('exit', function (code) {
