@@ -10,11 +10,9 @@
 
 var cmdr = require('commander');
 var c = require('chalk');
-var path = require('path');
-var spawn = require('child_process').spawn;
-var inquirer = require('inquirer');
 var Liftoff = require('liftoff');
-var u = require('../lib/xtc-utils.js')
+var inquirer = require('inquirer');
+var u = require('../lib/xtc-utils.js');
 
 var log = console.log;
 /*
@@ -30,8 +28,8 @@ var prettyTime = require('pretty-hrtime');
 
 function handleArguments(env) {
 
-	var argv = env.argv;
-	var cliPackage = require('../package');
+	//var argv = env.argv;
+	//var cliPackage = require('../package');
 	var xtcMain = env.modulePath;
 	var xtcJson = env.modulePackage;
 
@@ -69,15 +67,9 @@ function handleArguments(env) {
 			var xtcArgs = [xtcMain];
 
 			u.checkLocalXtc(env);
-
 			cmd.port && xtcArgs.push('--port='+ cmd.port);
-
-			spawn('node', xtcArgs, {
-					stdio: 'inherit'
-				})
-				.on('exit', function (code) {
-					process.exit(code);
-				})
+			u.spawn('node', xtcArgs, { stdio: 'inherit' })
+				.catch(u.fail)
 			;
 		});
 
@@ -93,16 +85,10 @@ function handleArguments(env) {
 			;
 
 			u.checkLocalXtc(env);
-
 			cmd.dist && xtcArgs.push('--dist');
-
-			grunt = spawn('grunt', xtcArgs, {
-				stdio: 'inherit'
-			});
-
-			grunt.on('exit', function (code) {
-				process.exit(code);
-			})
+			u.spawn('grunt', xtcArgs, { stdio: 'inherit' })
+				.catch(u.fail)
+			;
 		});
 
 
@@ -112,13 +98,8 @@ function handleArguments(env) {
 		.action(function(cmd) {
 
 			u.checkLocalXtc(env);
-
-			spawn('yo', ['xtc:module'], {
-					stdio: 'inherit'
-				})
-				.on('exit', function (code) {
-					process.exit(code);
-				})
+			u.spawn('yo', ['xtc:module'], { stdio: 'inherit' })
+				.catch(u.fail)
 			;
 		});
 
@@ -129,13 +110,8 @@ function handleArguments(env) {
 		.action(function(cmd) {
 
 			u.checkLocalXtc(env);
-
-			spawn('yo', ['xtc:skin'], {
-					stdio: 'inherit'
-				})
-				.on('exit', function (code) {
-					process.exit(code);
-				})
+			u.spawn('yo', ['xtc:skin'], { stdio: 'inherit'})
+				.catch(u.fail)
 			;
 		});
 
@@ -146,21 +122,14 @@ function handleArguments(env) {
 		.action(function(cmd) {
 
 			u.checkLocalXtc(env);
-
-			spawn('yo', ['xtc'], {
-					stdio: 'inherit'
-				})
-				.on('exit', function (code) {
-					if (code !== 0) {
-						console.log(c.magenta('I think something went wrong...'));
-					}
-					process.exit(code);
-				});
+			u.spawn('yo', ['xtc'], { stdio: 'inherit'})
+				.catch(u.fail)
+			;
 		});
 
 
 	cmdr
-		.command('install') // TODO: refactor this with promises and modules
+		.command('install')
 		.description('Install xtc and set up a project')
 		.action(function(cmd) {
 
@@ -168,42 +137,51 @@ function handleArguments(env) {
 
 			log(c.magenta('\nxtc install\n'));
 
-			inquirer.prompt([
-				{
+			///////////////////////////////////////////////////////////////////
+			// Ask user if cwd is the desired install location
+			u.prompt({
 					type : 'confirm',
 					name : 'IsPathOk',
 					message : 'Your project will be set up in ' +env.cwd +' Ok?',
 					default: true
-				}
-			], function( answers ) {
-				//config.projectPath = answers.projectPath;
-				if (!answers.IsPathOk) {
-					log('Change to the desired directory and try again.');
-					process.exit(0);
-				}
-
-				log('Getting list of xtc versions from npm...');
-
-				// get list of xtc versions from npm
-				u.pkgInfo('xtc', function(err, versions) {
-
-					if (err) {
-						if (err.message === 'getaddrinfo ENOTFOUND') {
-							log(c.red('\nDNS error. Are you offline?\n'));
-							process.exit(1);
+				})
+				.then(
+					function( answers ) {
+						//config.projectPath = answers.projectPath;
+						if (!answers.IsPathOk) {
+							u.fail(0, 'Change to the desired directory and try again.')
 						}
-						throw err;
+					},
+					function(err) {
+						u.fail(null, err.stack);
 					}
+				)
+
+				///////////////////////////////////////////////////////////////////
+				// Get list of xtc versions from npm (or cache)
+				.then(function() {
+					log('Getting list of xtc versions from npm...');
+					return u.pkgInfo('xtc');
+				})
+				.catch(function(err) {
+					if (err.message === 'getaddrinfo ENOTFOUND') {
+						u.fail(null, 'DNS error. Are you offline?');
+					} else {
+						u.fail(err.stack);
+					}
+				})
+
+				///////////////////////////////////////////////////////////////////
+				// let the user choose the version to install. default to latest
+				.then(function(versions) {
 
 					var choices = versions.slice();
 
 					choices.unshift(new inquirer.Separator());
 					choices.push(new inquirer.Separator(), '#develop branch', new inquirer.Separator());
-					//choices.push('tarball', new inquirer.Separator());
+					choices.push('tarball', new inquirer.Separator());
 
-					// let the user choose the version to install. default to latest
-
-					inquirer.prompt([
+					return u.prompt([
 						{
 							type : 'list',
 							name : 'xtcVersion',
@@ -212,81 +190,66 @@ function handleArguments(env) {
 							default: 0,
 							choices : choices
 						}
-					], function( answers ) {
-						var xtcInstallArg;
+					]);
+				})
+				.catch(function(err) {
+					u.fail(null, err.stack);
+				})
 
-						config.xtcVersion = answers.xtcVersion;
+				///////////////////////////////////////////////////////////////////
+				// npm install xtc@version (versioned generator is in xtc's dependencies)
+				.then(function( answers ) {
+					var xtcInstallArg;
 
-						if (config.xtcVersion == '#develop branch') {
-							xtcInstallArg = 'git://github.com/marcdiethelm/xtc.git#develop';
-						} /*else if (config.xtcVersion == 'tarball') { // todo: need a prompt for tarball location
-							xtcInstallArg = '/Users/marc/projects/xtc-0.8.0-beta6.tgz';
-						}*/ else {
-							xtcInstallArg = 'xtc@'+ config.xtcVersion;
-						}
+					config.xtcVersion = answers.xtcVersion;
 
-						// npm install xtc@version (versioned generator is in xtc's dependencies)
+					if (config.xtcVersion == '#develop branch') {
+						xtcInstallArg = 'git://github.com/marcdiethelm/xtc.git#develop';
+					} else if (config.xtcVersion == 'tarball') { // todo: need a prompt for tarball location (and then save that…)
+						xtcInstallArg = '/Users/marc/projects/xtc-0.8.0-rc1.tgz';
+					} else {
+						xtcInstallArg = 'xtc@'+ config.xtcVersion;
+					}
 
-						log(c.magenta('\nInstalling xtc module %s...\n'), config.xtcVersion);
+					log(c.magenta('\nInstalling xtc module %s...\n'), config.xtcVersion);
 
+					return u.spawn('npm', ['install', xtcInstallArg], { stdio: 'inherit'});
+				})
+				.then(function() {
+						log(c.cyan('\nxtc module installed successfully'));
+					}, function(code) {
+						u.fail(code, 'I think something went wrong...')
+					}
+				)
 
-						spawn('npm', ['install', xtcInstallArg], {
-								stdio: 'inherit'
-							})
-							.on('exit', function (code) {
-								if (code !== 0) {
-									console.log(c.magenta('\nI think something went wrong.\n'));
-									process.exit(code);
-								}
-								log(c.cyan('\nxtc module installed successfully'));
+				///////////////////////////////////////////////////////////////////
+				// bundledDependencies don't have their dependencies installed. need to do that ourselves.
+				// https://github.com/npm/npm/issues/2442
+				.then(function() {
+					log(c.magenta('\nInstalling generator-xtc dependencies...\n'));
 
-								// bundledDependencies don't have their dependencies installed
-								// https://github.com/npm/npm/issues/2442
-								// need to do that ourselves
-
-								log(c.magenta('\nInstalling generator-xtc dependencies...\n'));
-
-								spawn('npm', ['install'], {
-										stdio: 'inherit'
-									   ,cwd: './node_modules/generator-xtc'
-									})
-									.on('exit', function (code) {
-										if (code !== 0) {
-											console.log(c.magenta('\nI think something went wrong.\n'));
-											process.exit(code);
-										}
-
-										log(c.cyan('\ngenerator-xtc dependencies installed successfully'));
-
-										// run generator
-
-										log(c.magenta('\nStarting project setup...\n'));
-
-										spawn('yo', ['xtc'], {
-												stdio: 'inherit'
-											})
-											.on('exit', function (code) {
-												if (code !== 0) {
-													console.log(c.magenta('\nI think something went wrong.\n'));
-												}
-												process.exit(code);
-											});
-
-									});
-
-							})
-						;
-
+					return u.spawn('npm', ['install'], {
+						stdio: 'inherit'
+					   ,cwd: './node_modules/generator-xtc'
 					});
+				})
+				.then(function() {
+						log(c.cyan('\ngenerator-xtc dependencies installed successfully'));
+					}, function(code) {
+						u.fail(code, 'I think something went wrong...')
+					}
+				)
 
-					/*var ui = new inquirer.ui.BottomBar();
-
-					// Or simply write output
-					ui.log.write("something just happened.");*/
-
-				});
-
-			});
+				///////////////////////////////////////////////////////////////////
+				// run project generator
+				.then(function() {
+					log(c.magenta('\nStarting project setup...\n'));
+					return u.spawn('yo', ['xtc'], { stdio: 'inherit'});
+				})
+				.catch(function(code) {
+					u.fail(code, 'I think something went wrong...');
+				})
+				.done(null, u.fail);
 		});
 
 

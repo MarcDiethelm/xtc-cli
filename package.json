@@ -23,6 +23,7 @@
     "commander": "^2.2.0",
     "inquirer": "^0.4.1",
     "liftoff": "^0.9.6",
-    "npm-pkginfo": "^0.0.3"
+    "npm-pkginfo": "^0.0.3",
+    "q": "^1.0.1"
   }
 }
