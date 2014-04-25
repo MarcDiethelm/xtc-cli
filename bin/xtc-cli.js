@@ -65,7 +65,7 @@ function handleArguments(env) {
 	cmdr
 		.command('start')
 		.description('Starts the xtc server. Use `-p [number]` to force a port.')
-		.option('-p, --port [number]', 'Specify the port that xtc should listen to.')
+		.option('-p, --port [number]', 'Specify the port that xtc should listen on.')
 		.action(function(cmd) {
 
 			var xtcArgs = [xtcMain];
