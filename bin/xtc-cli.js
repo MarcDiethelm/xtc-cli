@@ -276,6 +276,7 @@ function handleArguments(env) {
 
 
 	cmdr.parse(process.argv);
+	if (!cmdr.args.length) cmdr.help();
 
 
 	/*if (process.cwd() !== env.cwd) {
