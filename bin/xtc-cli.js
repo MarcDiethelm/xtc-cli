@@ -38,10 +38,14 @@ function handleArguments(env) {
 
 
 	cmdr
-		.command('help')
-		.description('Shows this usage information')
+		.command('help [command]')
+		.description('Show usage information')
 		.action(function(cmd) {
-			cmdr.help();
+			'string' === typeof cmd
+				? cmdr.emit(cmd, null, ['--help'])
+				: cmdr.outputHelp()
+			;
+			process.exit();
 		});
 
 
