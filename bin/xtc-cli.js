@@ -39,31 +39,6 @@ function handleArguments(env) {
 
 
 	cmdr
-		.command('help [command]')
-		.description('Show usage information')
-		.action(function(cmd) {
-			'string' === typeof cmd
-				? cmdr.emit(cmd, null, ['--help'])
-				: cmdr.outputHelp()
-			;
-			process.exit();
-		});
-
-
-	cmdr
-		.command('info')
-		.description('Information about the project setup')
-		.action(function(cmd) {
-			var info =
-				c.underline('\nProject information\n\n') +
-				'xtc version: %s\n'
-			;
-
-			log(info, xtcJson.version);
-		});
-
-
-	cmdr
 		.command('start')
 		.description('Starts the xtc server. Use `-p [number]` to force a port.')
 		.option('-p, --port [number]', 'Specify the port that xtc should listen on.')
@@ -122,20 +97,8 @@ function handleArguments(env) {
 
 
 	cmdr
-		.command('setup')
-		.description('Launch project setup')
-		.action(function(cmd) {
-
-			u.checkLocalXtc(env);
-			u.spawn('yo', ['xtc'], { stdio: 'inherit'})
-				.catch(u.fail)
-			;
-		});
-
-
-	cmdr
 		.command('install')
-		.description('Install xtc and set up a project')
+		.description('Install xtc and launch project setup')
 		.action(function(cmd) {
 
 			var config = {};
@@ -254,6 +217,43 @@ function handleArguments(env) {
 					u.fail(code, 'I think something went wrong...');
 				})
 				.done(null, u.fail);
+		});
+
+
+	cmdr
+		.command('setup')
+		.description('Launch project setup')
+		.action(function(cmd) {
+
+			u.checkLocalXtc(env);
+			u.spawn('yo', ['xtc'], { stdio: 'inherit'})
+				.catch(u.fail)
+			;
+		});
+
+
+	cmdr
+		.command('info')
+		.description('Information about the project setup')
+		.action(function(cmd) {
+			var info =
+				c.underline('\nProject information\n\n') +
+				'xtc version: %s\n'
+			;
+
+			log(info, xtcJson.version);
+		});
+
+
+	cmdr
+		.command('help [command]')
+		.description('Show usage information')
+		.action(function(cmd) {
+			'string' === typeof cmd
+				? cmdr.emit(cmd, null, ['--help'])
+				: cmdr.outputHelp()
+			;
+			process.exit();
 		});
 
 

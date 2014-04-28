@@ -29,14 +29,14 @@ outputs this
 
   Commands:
 
-    help [command]         Show usage information
-    info                   Information about the project setup
     start [options]        Starts the xtc server. Use `-p [number]` to force a port.
     build [options]        Start frontend asset build. Use `-d` for production build to dist target.
     mkmod                  Create new Terrific frontend modules
     mkskin                 Create new skins for a Terrific frontend module
+    install                Install xtc and launch project setup
     setup                  Launch project setup
-    install                Install xtc and set up a project
+    info                   Information about the project setup
+    help [command]         Show usage information
 
   Options:
 
