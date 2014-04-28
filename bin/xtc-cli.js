@@ -13,6 +13,7 @@ var c = require('chalk');
 var Liftoff = require('liftoff');
 var inquirer = require('inquirer');
 var u = require('../lib/xtc-utils.js');
+u.spawn = require('superspawn').spawn;
 
 var log = console.log;
 /*
