@@ -201,7 +201,7 @@ function handleArguments(env) {
 				})
 
 				///////////////////////////////////////////////////////////////////
-				// npm install xtc@version (versioned generator is in xtc's dependencies)
+				// npm install xtc@version
 				.then(function( answers ) {
 					var xtcInstallArg;
 
@@ -228,6 +228,7 @@ function handleArguments(env) {
 
 				///////////////////////////////////////////////////////////////////
 				// bundledDependencies don't have their dependencies installed. need to do that ourselves.
+				// generator-xtc is in xtc's bundledDependencies
 				// https://github.com/npm/npm/issues/2442
 				.then(function() {
 					log(c.magenta('\nInstalling generator-xtc dependencies...\n'));
