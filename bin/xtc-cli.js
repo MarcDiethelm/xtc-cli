@@ -221,9 +221,8 @@ function handleArguments(env) {
 				})
 				.then(function() {
 						log(c.cyan('\nxtc module installed successfully'));
-					}, function(code) {
-						u.fail(code, 'I think something went wrong...')
-					}
+					},
+					u.trace
 				)
 
 				///////////////////////////////////////////////////////////////////
@@ -240,9 +239,8 @@ function handleArguments(env) {
 				})
 				.then(function() {
 						log(c.cyan('\ngenerator-xtc dependencies installed successfully'));
-					}, function(code) {
-						u.fail(code, 'I think something went wrong...')
-					}
+					},
+					u.trace
 				)
 
 				///////////////////////////////////////////////////////////////////
