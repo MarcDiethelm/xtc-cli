@@ -29,7 +29,7 @@ outputs this
 
   Commands:
 
-    help                   Shows this usage information
+    help [command]         Show usage information
     info                   Information about the project setup
     start [options]        Starts the xtc server. Use `-p [number]` to force a port.
     build [options]        Start frontend asset build. Use `-d` for production build to dist target.

@@ -6,4 +6,5 @@
 - Commands that require local xtc install exit if xtc is not found
 - Refactored all async execution to use promises.
 - `xtc help command` now works.
+- Better error handling
 - Windows compatibility (what a nightmare that was!)
