@@ -25,6 +25,6 @@
     "liftoff": "~0.9.6",
     "npm-pkginfo": "~0.0.3",
     "q": "^1.0.1",
-    "superspawn": "~0.0.2"
+    "superspawn": "~0.1.0"
   }
 }
