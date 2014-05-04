@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.0 — 2014-05-xx
+- Stores source of xtc installation in xtcfile.json
+- `xtc info` displays source of xtc installation
+
 ## 0.1.0 — 2014-04-28
 - Add a changelog
 - New option: xtc start --port|-p [number]

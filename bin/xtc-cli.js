@@ -12,9 +12,11 @@ var cmdr = require('commander');
 var c = require('chalk');
 var Liftoff = require('liftoff');
 var inquirer = require('inquirer');
+var Q = require('q');
 var u = require('../lib/xtc-utils.js');
 u.spawn = require('superspawn').spawn;
 
+var rcVersion = 0;
 var log = console.log;
 /*
 var semver = require('semver');
@@ -33,6 +35,7 @@ function handleArguments(env) {
 	//var cliPackage = require('../package');
 	var xtcMain = env.modulePath;
 	var xtcJson = env.modulePackage;
+	var xtcfile = env.configPath || 'xtcfile.json';
 
 
 	cmdr.version(require('../package').version);
@@ -101,7 +104,14 @@ function handleArguments(env) {
 		.description('Install xtc and launch project setup')
 		.action(function(cmd) {
 
-			var config = {};
+			var config = {
+					xtcSrc: {
+						type: null
+						,src: null
+					}
+				},
+				store = u.readXtcfile(xtcfile) || config
+			;
 
 			log(c.magenta('\nxtc install\n'));
 
@@ -165,23 +175,48 @@ function handleArguments(env) {
 				})
 
 				///////////////////////////////////////////////////////////////////
-				// npm install xtc@version
-				.then(function( answers ) {
-					var xtcInstallArg;
+				// Write choices back to xtcfile
+				.then(function(answers) {
 
-					config.xtcVersion = answers.xtcVersion;
-
-					if (config.xtcVersion == '#develop branch') {
-						xtcInstallArg = 'git://github.com/marcdiethelm/xtc.git#develop';
-					} else if (config.xtcVersion == 'tarball') { // todo: need a prompt for tarball location (and then save that…)
-						xtcInstallArg = '/Users/marc/projects/xtc-0.8.0-rc1.tgz';
+					if ('#develop branch' == answers.xtcVersion) {
+						config.xtcSrc.type = 'git';
+						config.xtcSrc.src = 'git://github.com/marcdiethelm/xtc.git#develop';
+					} else if (answers.xtcVersion == 'tarball') { // todo: need a prompt for tarball location (and then save that…)
+						config.xtcSrc.type = 'tarball';
+						config.xtcSrc.src = '/Users/marc/projects/xtc-0.8.0-rc1.tgz';
 					} else {
-						xtcInstallArg = 'xtc@'+ config.xtcVersion;
+						config.xtcSrc.type = 'npm';
+						config.xtcSrc.src = 'xtc@'+ answers.xtcVersion;
 					}
 
-					log(c.magenta('\nInstalling xtc module %s...\n'), config.xtcVersion);
+					store.rcVersion     = rcVersion;
+					store.xtcSrc        = {
+						type: config.xtcSrc.type
+						,src: config.xtcSrc.src
+					};
 
-					return u.spawn('npm', ['install', xtcInstallArg], { stdio: 'inherit'});
+					 // we only know the xtc version when source is npm
+					store.xtcVersion = 'npm' === config.xtcSrc.type
+						? answers.xtcVersion
+						: null
+					;
+
+					return Q.nfcall(require('fs').writeFile, xtcfile, JSON.stringify(store, null, 2))
+				})
+				.then(function() {
+						console.log('\nCreated xtcfile');
+					}, function(err) {
+						console.error('\nUnable to write xtcfile.\nReason: %s\n', err.message);
+					}
+				)
+
+				///////////////////////////////////////////////////////////////////
+				// npm install xtc@version
+				.then(function() {
+
+					log(c.magenta('\nInstalling xtc module %s...'), config.xtcSrc.src);
+
+					return u.spawn('npm', ['install', config.xtcSrc.src], { stdio: 'inherit'});
 				})
 				.then(function() {
 						log(c.cyan('\nxtc module installed successfully'));
@@ -237,11 +272,18 @@ function handleArguments(env) {
 		.description('Information about the project setup')
 		.action(function(cmd) {
 			var info =
-				c.underline('\nProject information\n\n') +
-				'xtc version: %s\n'
+				c.underline('\nproject information\n') +
+					'xtc version:\t %s\n',
+				store = u.readXtcfile(xtcfile)
 			;
 
 			log(info, xtcJson.version);
+			if (store) {
+				log(c.underline('xtc source'));
+				log('type:\t\t %s', store.xtcSrc.type);
+				log('src:\t\t %s', store.xtcSrc.src);
+			}
+			u.nl();
 		});
 
 
