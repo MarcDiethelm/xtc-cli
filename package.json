@@ -25,6 +25,7 @@
     "liftoff": "~0.9.6",
     "npm-pkginfo": "~0.0.3",
     "q": "^1.0.1",
+    "semver": "^2.3.0",
     "superspawn": "~0.1.0"
   }
 }

@@ -12,6 +12,7 @@ var cmdr = require('commander');
 var c = require('chalk');
 var Liftoff = require('liftoff');
 var inquirer = require('inquirer');
+var semver = require('semver');
 var Q = require('q');
 var u = require('../lib/xtc-utils.js');
 u.spawn = require('superspawn').spawn;
@@ -27,6 +28,11 @@ var findup = require('findup-sync');
 var gutil = require('gulp-util');
 var prettyTime = require('pretty-hrtime');
 */
+
+/*
+https://github.com/harthur/nomnom
+looks very very interesting too. certainly better documented than commander.
+ */
 
 
 function handleArguments(env) {
@@ -46,12 +52,25 @@ function handleArguments(env) {
 		.description('Starts the xtc server. Use `-p [number]` to force a port.')
 		.option('-p, --port [number]', 'Specify the port that xtc should listen on.')
 		.action(function(cmd) {
-
-			var xtcArgs = [xtcMain];
+			var xtcArgs
+				,projectJson
+			;
 
 			u.checkLocalXtc(env);
+
+			if (semver.gte(xtcJson.version, '0.8.0-beta8')) {
+				xtcArgs = [u.readProjectJson().main, 'server.js'];
+			}
+			else {
+				xtcArgs = [xtcMain];
+			}
+
 			cmd.port && xtcArgs.push('--port='+ cmd.port);
-			u.spawn('node', xtcArgs, { stdio: 'inherit' })
+			u.spawn(
+					'node'
+					,xtcArgs
+					,{ stdio: 'inherit' }
+				)
 				.catch(u.fail)
 			;
 		});
@@ -318,6 +337,7 @@ function handleArguments(env) {
 
 
 	cmdr.parse(process.argv);
+
 	if (!cmdr.args.length) cmdr.help();
 
 
