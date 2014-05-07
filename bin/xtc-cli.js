@@ -198,8 +198,10 @@ function handleArguments(env) {
 				.then(function(answers) {
 
 					if ('#develop branch' == answers.xtcVersion) {
-						config.xtcSrc.type = 'git';
-						config.xtcSrc.src = 'git://github.com/marcdiethelm/xtc.git#develop';
+						config.xtcSrc.type = 'tarball';
+						config.xtcSrc.src = 'https://github.com/MarcDiethelm/xtc/archive/develop.tar.gz';
+						// this fails on Windows with "Invalid tar file": https://gist.github.com/janwidmer/9d0b8bd45678019d1a28
+						//config.xtcSrc.type = 'git'; config.xtcSrc.src = 'git://github.com/marcdiethelm/xtc.git#develop';
 					} else if (answers.xtcVersion == 'tarball') { // todo: need a prompt for tarball location (and then save that…)
 						config.xtcSrc.type = 'tarball';
 						config.xtcSrc.src = '/Users/marc/projects/xtc-0.8.0-rc1.tgz';
