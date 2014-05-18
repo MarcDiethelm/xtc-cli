@@ -269,7 +269,7 @@ function handleArguments(env) {
 				// run project generator
 				.then(function() {
 					log(c.magenta('\nStarting project setup...\n'));
-					return u.spawn('yo', ['xtc'], { stdio: 'inherit'});
+					return u.spawn('yo', ['xtc:app'], { stdio: 'inherit'});
 				})
 				.catch(function(code) {
 					u.fail(code, 'I think something went wrong...');
@@ -280,11 +280,11 @@ function handleArguments(env) {
 
 	cmdr
 		.command('setup')
-		.description('Launch project setup')
+		.description('Launch project setup') // does not install any dependencies
 		.action(function(cmd) {
 
 			u.checkLocalXtc(env);
-			u.spawn('yo', ['xtc'], { stdio: 'inherit'})
+			u.spawn('yo', ['xtc:app'], {stdio: 'inherit'})
 				.catch(u.fail)
 			;
 		});
