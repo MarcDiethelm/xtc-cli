@@ -294,13 +294,13 @@ function handleArguments(env) {
 					var outro =
 						'\nInstallation complete!\n\n' +
 
-						chalk.cyan('xtc build')     +'\t\tstarts dev build\n' +
-						chalk.cyan('xtc start')     +'\t\tstarts the server\n\n' +
+						c.cyan('xtc build')     +'\t\tstarts dev build\n' +
+						c.cyan('xtc start')     +'\t\tstarts the server\n\n' +
 
-						chalk.cyan('xtc help')      +'\t\tlist available commands\n\n'
+						c.cyan('xtc help')      +'\t\tlist available commands\n'
 
-						//chalk.cyan('npm run mkmod') +    '\t\tcreate a frontend module\n' +
-						//chalk.cyan('npm run mkskin') +    '\t\tcreate a skin for a frontend module\n'
+						//c.cyan('npm run mkmod') +    '\t\tcreate a frontend module\n' +
+						//c.cyan('npm run mkskin') +    '\t\tcreate a skin for a frontend module\n'
 					;
 					log(outro);
 				})
