@@ -237,7 +237,9 @@ function handleArguments(env) {
 
 					log(c.magenta('\nInstalling xtc module %s...'), config.xtcSrc.src);
 
-					return u.spawn('npm', ['install', config.xtcSrc.src], { stdio: 'inherit'});
+					return u.spawn('npm', ['install', '--production', config.xtcSrc.src], {
+						stdio: 'inherit'
+					});
 				})
 				.then(function() {
 						log(c.cyan('\nxtc module installed successfully'));
@@ -252,7 +254,7 @@ function handleArguments(env) {
 				.then(function() {
 					log(c.magenta('\nInstalling generator-xtc dependencies...\n'));
 
-					return u.spawn('npm', ['install'], {
+					return u.spawn('npm', ['install', '--production'], {
 						stdio: 'inherit'
 					   ,cwd: './node_modules/generator-xtc'
 					});
