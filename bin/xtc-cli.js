@@ -274,6 +274,36 @@ function handleArguments(env) {
 				.catch(function(code) {
 					u.fail(code, 'I think something went wrong...');
 				})
+
+				///////////////////////////////////////////////////////////////////
+				// Install any remaining dependencies. e.g. hipsum
+				.then(function() {
+					log(c.magenta('\nInstalling remaining project dependencies...\n'));
+
+					return u.spawn('npm', ['install', '--production'], {
+						stdio: 'inherit'
+					});
+				})
+				.then(function() {
+						log(c.cyan('\nremaining project dependencies install complete\n'));
+						return true;
+					},
+					u.trace
+				)
+				.then(function() {
+					var outro =
+						'\nInstallation complete!\n\n' +
+
+						chalk.cyan('xtc build')     +'\t\tstarts dev build\n' +
+						chalk.cyan('xtc start')     +'\t\tstarts the server\n\n' +
+
+						chalk.cyan('xtc help')      +'\t\tlist available commands\n\n'
+
+						//chalk.cyan('npm run mkmod') +    '\t\tcreate a frontend module\n' +
+						//chalk.cyan('npm run mkskin') +    '\t\tcreate a skin for a frontend module\n'
+					;
+					log(outro);
+				})
 				.done(null, u.fail);
 		});
 
