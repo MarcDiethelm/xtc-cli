@@ -176,7 +176,7 @@ function handleArguments(env) {
 
 					choices.unshift(new inquirer.Separator());
 					choices.push(new inquirer.Separator(), '#develop branch', new inquirer.Separator());
-					choices.push('tarball', new inquirer.Separator());
+					//choices.push('tarball', new inquirer.Separator());
 
 					return u.prompt([
 						{
@@ -204,7 +204,7 @@ function handleArguments(env) {
 						//config.xtcSrc.type = 'git'; config.xtcSrc.src = 'git://github.com/marcdiethelm/xtc.git#develop';
 					} else if (answers.xtcVersion == 'tarball') { // todo: need a prompt for tarball location (and then save that…)
 						config.xtcSrc.type = 'tarball';
-						config.xtcSrc.src = '/Users/marc/projects/xtc-0.8.0-rc1.tgz';
+						config.xtcSrc.src = '/Users/marc/projects/xtc-0.8.0-beta8.tgz';
 					} else {
 						config.xtcSrc.type = 'npm';
 						config.xtcSrc.src = 'xtc@'+ answers.xtcVersion;
