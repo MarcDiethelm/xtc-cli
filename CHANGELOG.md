@@ -1,8 +1,10 @@
 # Changelog
 
-## 0.2.0 — 2014-05-xx
+## 0.2.0 — 2014-06-04
 - Stores source of xtc installation in xtcfile.json
 - `xtc info` displays source of xtc installation
+- Installing develop branch now uses URI for a tarball instead of git. Fixes 'invalid tar file" issue on Windows
+- Install pre-set project dependencies (after installing xtc, generator-xtc's dependencies and project setup). Some modules (e.g. Hipsum.js) are now installed at the project-level and can be changed by the user.
 
 ## 0.1.0 — 2014-04-28
 - Add a changelog
