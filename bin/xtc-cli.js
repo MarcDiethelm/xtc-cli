@@ -122,189 +122,200 @@ function handleArguments(env) {
 		.command('install')
 		.description('Install xtc and launch project setup')
 		.action(function(cmd) {
+			var store;
 
-			var config = {
+			///////////////////////////////////////////////////////////////////
+			// Read xtcfile (if present)
+			u.readXtcfile(xtcfile)
+			.then(function(data) {
+				store = data;
+			})
+			.catch(function() {
+				store = {
 					xtcSrc: {
-						type: null
-						,src: null
+						 type: null
+						,src : null
 					}
-				},
-				store = u.readXtcfile(xtcfile) || config
-			;
-
-			log(c.magenta('\nxtc install\n'));
+				};
+			})
 
 			///////////////////////////////////////////////////////////////////
 			// Ask user if cwd is the desired install location
-			u.prompt({
+			.then(function() {
+				log(c.magenta('\nxtc install\n'));
+				return u.prompt({
 					type : 'confirm',
 					name : 'IsPathOk',
 					message : 'Your project will be set up in ' +env.cwd +' Ok?',
 					default: true
-				})
-				.then(
-					function( answers ) {
-						//config.projectPath = answers.projectPath;
-						if (!answers.IsPathOk) {
-							u.fail(0, 'Change to the desired directory and try again.')
-						}
-					},
-					function(err) {
-						u.fail(null, err.stack);
+				});
+			})
+			.then(
+				function( answers ) {
+					//config.projectPath = answers.projectPath;
+					if (!answers.IsPathOk) {
+						u.fail(0, 'Change to the desired directory and try again.')
 					}
-				)
-
-				///////////////////////////////////////////////////////////////////
-				// Get list of xtc versions from npm (or cache)
-				.then(function() {
-					log('Getting list of xtc versions from npm...');
-					return u.pkgInfo('xtc');
-				})
-				.catch(function(err) {
-					if (err.message === 'getaddrinfo ENOTFOUND') {
-						u.fail(null, 'DNS error. Are you offline?');
-					} else {
-						u.fail(err.stack);
-					}
-				})
-
-				///////////////////////////////////////////////////////////////////
-				// let the user choose the version to install. default to latest
-				.then(function(versions) {
-
-					var choices = versions.slice();
-
-					choices.unshift(new inquirer.Separator());
-					choices.push(new inquirer.Separator(), '#develop branch', new inquirer.Separator());
-					//choices.push('tarball', new inquirer.Separator());
-
-					return u.prompt([
-						{
-							type : 'list',
-							name : 'xtcVersion',
-							message : 'Choose a version to install',
-							paginated : true,
-							default: 0,
-							choices : choices
-						}
-					]);
-				})
-				.catch(function(err) {
+				},
+				function(err) {
 					u.fail(null, err.stack);
-				})
+				}
+			)
 
-				///////////////////////////////////////////////////////////////////
-				// Write choices back to xtcfile
-				.then(function(answers) {
+			///////////////////////////////////////////////////////////////////
+			// Get list of xtc versions from npm (or cache)
+			.then(function() {
+				log('Getting list of xtc versions from npm...');
+				return u.pkgInfo('xtc');
+			})
+			.catch(function(err) {
+				if (err.message === 'getaddrinfo ENOTFOUND') {
+					u.fail(null, 'DNS error. Are you offline?');
+				} else {
+					u.fail(err.stack);
+				}
+			})
 
-					if ('#develop branch' == answers.xtcVersion) {
-						config.xtcSrc.type = 'tarball';
-						config.xtcSrc.src = 'https://github.com/MarcDiethelm/xtc/archive/develop.tar.gz';
-						// this fails on Windows with "Invalid tar file": https://gist.github.com/janwidmer/9d0b8bd45678019d1a28
-						//config.xtcSrc.type = 'git'; config.xtcSrc.src = 'git://github.com/marcdiethelm/xtc.git#develop';
-					} else if (answers.xtcVersion == 'tarball') { // todo: need a prompt for tarball location (and then save that…)
-						config.xtcSrc.type = 'tarball';
-						config.xtcSrc.src = '/Users/marc/projects/xtc-0.8.0-beta8.tgz';
-					} else {
-						config.xtcSrc.type = 'npm';
-						config.xtcSrc.src = 'xtc@'+ answers.xtcVersion;
+			///////////////////////////////////////////////////////////////////
+			// let the user choose the version to install. default to latest
+			.then(function(versions) {
+
+				var choices = versions.slice();
+
+				choices.unshift(new inquirer.Separator());
+				choices.push(new inquirer.Separator(), '#develop branch', new inquirer.Separator());
+				//choices.push('tarball', new inquirer.Separator());
+
+				return u.prompt([
+					{
+						type : 'list',
+						name : 'xtcVersion',
+						message : 'Choose a version to install',
+						paginated : true,
+						default: 0,
+						choices : choices
 					}
+				]);
+			})
+			.catch(function(err) {
+				u.fail(null, err.stack);
+			})
 
-					store.rcVersion     = rcVersion;
-					store.xtcSrc        = {
-						type: config.xtcSrc.type
-						,src: config.xtcSrc.src
-					};
+			///////////////////////////////////////////////////////////////////
+			// Write choices back to xtcfile
+			.then(function(answers) {
 
-					 // we only know the xtc version when source is npm
-					store.xtcVersion = 'npm' === config.xtcSrc.type
-						? answers.xtcVersion
-						: null
-					;
+				if ('#develop branch' == answers.xtcVersion) {
+					config.xtcSrc.type = 'tarball';
+					config.xtcSrc.src = 'https://github.com/MarcDiethelm/xtc/archive/develop.tar.gz';
+					// this fails on Windows with "Invalid tar file": https://gist.github.com/janwidmer/9d0b8bd45678019d1a28
+					//config.xtcSrc.type = 'git'; config.xtcSrc.src = 'git://github.com/marcdiethelm/xtc.git#develop';
+				} else if (answers.xtcVersion == 'tarball') { // todo: need a prompt for tarball location (and then save that…)
+					config.xtcSrc.type = 'tarball';
+					config.xtcSrc.src = '/Users/marc/projects/xtc-0.8.0-beta8.tgz';
+				} else {
+					config.xtcSrc.type = 'npm';
+					config.xtcSrc.src = 'xtc@'+ answers.xtcVersion;
+				}
 
-					return Q.nfcall(require('fs').writeFile, xtcfile, JSON.stringify(store, null, 2))
-				})
-				.then(function() {
-						console.log('\nCreated xtcfile');
-					}, function(err) {
-						console.error('\nUnable to write xtcfile.\nReason: %s\n', err.message);
-					}
-				)
+				store.rcVersion     = rcVersion;
+				store.xtcSrc        = {
+					type: config.xtcSrc.type
+					,src: config.xtcSrc.src
+				};
 
-				///////////////////////////////////////////////////////////////////
-				// npm install xtc@version
-				.then(function() {
+				 // we only know the xtc version when source is npm
+				store.xtcVersion = 'npm' === config.xtcSrc.type
+					? answers.xtcVersion
+					: null
+				;
 
-					log(c.magenta('\nInstalling xtc module %s...'), config.xtcSrc.src);
+				return Q.nfcall(require('fs').writeFile, xtcfile, JSON.stringify(store, null, 2))
+			})
+			.then(function() {
+					console.log('\nCreated xtcfile');
+				}, function(err) {
+					console.error('\nUnable to write xtcfile.\nReason: %s\n', err.message);
+				}
+			)
 
-					return u.spawn('npm', ['install', '--production', config.xtcSrc.src], {
-						stdio: 'inherit'
-					});
-				})
-				.then(function() {
-						log(c.cyan('\nxtc module installed successfully'));
-					},
-					u.trace
-				)
+			///////////////////////////////////////////////////////////////////
+			// npm install xtc@version
+			.then(function() {
 
-				///////////////////////////////////////////////////////////////////
-				// bundledDependencies don't have their dependencies installed. need to do that ourselves.
-				// generator-xtc is in xtc's bundledDependencies
-				// https://github.com/npm/npm/issues/2442
-				.then(function() {
-					log(c.magenta('\nInstalling generator-xtc dependencies...\n'));
+				log(c.magenta('\nInstalling xtc module %s...'), config.xtcSrc.src);
 
-					return u.spawn('npm', ['install', '--production'], {
-						stdio: 'inherit'
-					   ,cwd: './node_modules/generator-xtc'
-					});
-				})
-				.then(function() {
-						log(c.cyan('\ngenerator-xtc dependencies installed successfully'));
-					},
-					u.trace
-				)
+				return u.spawn('npm', ['install', '--production', config.xtcSrc.src], {
+					stdio: 'inherit'
+				});
+			})
+			.then(function() {
+					log(c.cyan('\nxtc module installed successfully'));
+				},
+				u.trace
+			)
 
-				///////////////////////////////////////////////////////////////////
-				// run project generator
-				.then(function() {
-					log(c.magenta('\nStarting project setup...\n'));
-					return u.spawn('yo', ['xtc:app'], { stdio: 'inherit'});
-				})
-				.catch(function(code) {
-					u.fail(code, 'I think something went wrong...');
-				})
+			///////////////////////////////////////////////////////////////////
+			// bundledDependencies don't have their dependencies installed. need to do that ourselves.
+			// generator-xtc is in xtc's bundledDependencies
+			// https://github.com/npm/npm/issues/2442
+			.then(function() {
+				log(c.magenta('\nInstalling generator-xtc dependencies...\n'));
 
-				///////////////////////////////////////////////////////////////////
-				// Install any remaining dependencies. e.g. hipsum
-				.then(function() {
-					log(c.magenta('\nInstalling remaining project dependencies...\n'));
+				return u.spawn('npm', ['install', '--production'], {
+					stdio: 'inherit'
+				   ,cwd: './node_modules/generator-xtc'
+				});
+			})
+			.then(function() {
+					log(c.cyan('\ngenerator-xtc dependencies installed successfully'));
+				},
+				u.trace
+			)
 
-					return u.spawn('npm', ['install', '--production'], {
-						stdio: 'inherit'
-					});
-				})
-				.then(function() {
-						log(c.cyan('\nremaining project dependencies install complete\n'));
-						return true;
-					},
-					u.trace
-				)
-				.then(function() {
-					var outro =
-						'\nInstallation complete!\n\n' +
+			///////////////////////////////////////////////////////////////////
+			// run project generator
+			.then(function() {
+				log(c.magenta('\nStarting project setup...\n'));
+				return u.spawn('yo', ['xtc:app'], { stdio: 'inherit'});
+			})
+			.catch(function(code) {
+				u.fail(code, 'I think something went wrong...');
+			})
 
-						c.cyan('xtc build')     +'\t\tstarts dev build\n' +
-						c.cyan('xtc start')     +'\t\tstarts the server\n\n' +
+			///////////////////////////////////////////////////////////////////
+			// Install any remaining dependencies. e.g. hipsum
+			.then(function() {
+				log(c.magenta('\nInstalling remaining project dependencies...\n'));
 
-						c.cyan('xtc help')      +'\t\tlist available commands\n'
+				return u.spawn('npm', ['install', '--production'], {
+					stdio: 'inherit'
+				});
+			})
+			.catch(u.trace)
+			.then(function() {
+				log(c.cyan('\nremaining project dependencies install complete\n'));
+				// `yo xtc:app` updates the xtcfile. Read it again.
+				return u.readXtcfile(xtcfile);
+			})
+			.catch(function(err) {
+				console.error(err);
+			})
+			.then(function(store) {
+				var outro = '';
 
-						//c.cyan('npm run mkmod') +    '\t\tcreate a frontend module\n' +
-						//c.cyan('npm run mkskin') +    '\t\tcreate a skin for a frontend module\n'
-					;
-					log(outro);
-				})
-				.done(null, u.fail);
+				outro += '\nInstallation complete!\n\n';
+
+				outro += c.cyan('xtc build')     +'\t\tstarts dev build\n';
+
+				store.needServer && (
+				outro += c.cyan('xtc start')     +'\t\tstarts the server\n\n'
+				);
+
+				outro += c.cyan('xtc help')      +'\t\tlist available commands\n';
+				log(outro);
+			})
+			.done(null, u.fail);
 		});
 
 
@@ -325,18 +336,26 @@ function handleArguments(env) {
 		.description('Information about the project setup')
 		.action(function(cmd) {
 			var info =
-				c.underline('\nproject information\n') +
-					'xtc version:\t %s\n',
-				store = u.readXtcfile(xtcfile)
+				c.underline.cyan('\nproject information\n') +
+					'xtc version:\t %s\n'
+				,store
 			;
 
-			log(info, xtcJson.version);
-			if (store) {
-				log(c.underline('xtc source'));
-				log('type:\t\t %s', store.xtcSrc.type);
-				log('src:\t\t %s', store.xtcSrc.src);
-			}
-			u.nl();
+			u.readXtcfile(xtcfile)
+				.then(function(data) {
+					store = data;
+				})
+				.finally(function() {
+					log(info, xtcJson.version);
+					if (store) {
+						log(c.underline.cyan('xtc source'));
+						log('type:\t\t %s', store.xtcSrc.type);
+						log('src:\t\t %s', store.xtcSrc.src);
+					}
+					u.nl();
+				})
+			;
+
 		});
 
 

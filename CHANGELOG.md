@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.2.1 — 2014-06-11
+- Fix showing `xtc start` hint after project setup, for default setups.
+
 ## 0.2.0 — 2014-06-04
 - Stores source of xtc installation in xtcfile.json
 - `xtc info` displays source of xtc installation
