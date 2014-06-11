@@ -1,3 +1,5 @@
+![npm version](http://b.adge.me/npm/v/xtc-cli.svg)
+
 xtc-cli
 =======
 
