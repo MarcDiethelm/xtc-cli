@@ -122,7 +122,13 @@ function handleArguments(env) {
 		.command('install')
 		.description('Install xtc and launch project setup')
 		.action(function(cmd) {
-			var store;
+			var store = {};
+			var config = {
+				xtcSrc: {
+					 type: null
+					,src : null
+				}
+			};
 
 			///////////////////////////////////////////////////////////////////
 			// Read xtcfile (if present)
@@ -131,12 +137,7 @@ function handleArguments(env) {
 				store = data;
 			})
 			.catch(function() {
-				store = {
-					xtcSrc: {
-						 type: null
-						,src : null
-					}
-				};
+				store = config;
 			})
 
 			///////////////////////////////////////////////////////////////////
@@ -232,12 +233,12 @@ function handleArguments(env) {
 
 				return Q.nfcall(require('fs').writeFile, xtcfile, JSON.stringify(store, null, 2))
 			})
+			.catch(function(err) {
+				console.error('\nUnable to write xtcfile.\nReason: %s\n', err.message);
+			})
 			.then(function() {
-					console.log('\nCreated xtcfile');
-				}, function(err) {
-					console.error('\nUnable to write xtcfile.\nReason: %s\n', err.message);
-				}
-			)
+				console.log('\nCreated xtcfile');
+			})
 
 			///////////////////////////////////////////////////////////////////
 			// npm install xtc@version
@@ -293,6 +294,9 @@ function handleArguments(env) {
 				});
 			})
 			.catch(u.trace)
+
+			///////////////////////////////////////////////////////////////////
+			// Outro
 			.then(function() {
 				log(c.cyan('\nremaining project dependencies install complete\n'));
 				// `yo xtc:app` updates the xtcfile. Read it again.
