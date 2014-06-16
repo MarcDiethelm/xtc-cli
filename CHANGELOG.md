@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.2.2 — 2014-06-xx
+## 0.2.2 — 2014-06-13
 - Fix issue #1 (install fails with `config is not defined`)
 
 ## 0.2.1 — 2014-06-11
