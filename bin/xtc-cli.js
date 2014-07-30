@@ -171,7 +171,7 @@ function handleArguments(env) {
 			})
 			.catch(function(err) {
 				if (err.message === 'getaddrinfo ENOTFOUND') {
-					u.fail(null, 'DNS error. Are you offline?');
+					u.fail(null, 'DNS error. Are you online?');
 				} else {
 					u.fail(err.stack);
 				}
