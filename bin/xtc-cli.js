@@ -104,9 +104,13 @@ function handleArguments(env) {
 		.action(function(cmd) {
 
 			u.checkLocalXtc(env);
+			u.checkGeneratorSymlink(env, true)
+				.catch(handleSymlinkError)
+				.then(function() {
 			u.spawn('yo', ['xtc:module'], { stdio: 'inherit' })
 				.catch(u.fail)
 			;
+		});
 		});
 
 
@@ -116,9 +120,13 @@ function handleArguments(env) {
 		.action(function(cmd) {
 
 			u.checkLocalXtc(env);
+			u.checkGeneratorSymlink(env, true)
+				.catch(handleSymlinkError)
+				.then(function() {
 			u.spawn('yo', ['xtc:skin'], { stdio: 'inherit'})
 				.catch(u.fail)
 			;
+		});
 		});
 
 
@@ -333,9 +341,14 @@ function handleArguments(env) {
 		.action(function(cmd) {
 
 			u.checkLocalXtc(env);
+
+			u.checkGeneratorSymlink(env, true)
+				.catch(handleSymlinkError)
+				.then(function() {
 			u.spawn('yo', ['xtc:app'], {stdio: 'inherit'})
 				.catch(u.fail)
 			;
+		});
 		});
 
 
@@ -363,7 +376,6 @@ function handleArguments(env) {
 					u.nl();
 				})
 			;
-
 		});
 
 
@@ -394,15 +406,41 @@ function handleArguments(env) {
 		.description('Check project setup, attempts fix if needed')
 		.action(function(cmd) {
 
-			log('\nMust symlink the generator from xtc\'s modules up to the project\'s modules. Else Yeoman won\'t find it.');
+			log('\ngenerator-xtc must be linked from xtc\'s modules up to the project\'s modules. Else Yeoman won\'t find it.');
 			log(c.cyan('Checking symlink...'));
 
 			u.doctorGeneratorSymlink(env)
 				.catch(function(err) {
-					//log(c.red(err.message));
-					u.trace(err);
+					log(c.red(err.message));
+					//u.trace(err);
 				})
 		});
+
+
+	/*cmdr
+		.command('test')
+		.description('Check setup')
+		.action(function(cmd) {
+			var path = require('path');
+			u.checkLocalXtc(env);
+			console.log('\ncheck ENOENT');
+			u.checkGeneratorSymlink('nope', report);
+			console.log('\ncheck FILE (not a link)');
+			u.checkGeneratorSymlink('server.js', report);
+			console.log('\ncheck broken SYMLINK');
+			u.checkGeneratorSymlink('foo', report);
+			console.log('\ncheck SYMLINK');
+			u.checkGeneratorSymlink(path.join(env.configBase, 'node_modules/generator-xtc'), report);
+
+			function report(err, success) {
+				if (err) {
+					console.log(err.code);
+				}
+				else {
+					console.log(success);
+				}
+			}
+		});*/
 
 
 	cmdr
@@ -455,3 +493,9 @@ var cli = new Liftoff({
 });
 
 cli.launch(handleArguments);
+
+
+
+function handleSymlinkError(err) {
+	u.fail(null, 'generator-xtc is not properly symlinked from xtc\'s modules to project modules.\nRun `xtc doctor` to attempt an automatic fix.');
+}
