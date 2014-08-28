@@ -38,6 +38,7 @@ outputs this
     install                Install xtc and launch project setup
     setup                  Launch project setup
     info                   Information about the project setup
+    ls                     List xtc versions published to npm
     help [command]         Show usage information
 
   Options:

@@ -364,6 +364,28 @@ function handleArguments(env) {
 
 
 	cmdr
+		.command('ls')// todo: this mostly duplicates the code in `install`. make DRY
+		.description('List xtc versions published to npm')
+		.action(function(cmd) {
+
+			log('Getting list of xtc versions from npm...');
+			u.pkgInfo('xtc')
+			.catch(function(err) {
+				if (err.message === 'getaddrinfo ENOTFOUND') {
+					u.fail(null, 'DNS error. Are you online?');
+				} else {
+					u.fail(err.stack);
+				}
+			})
+			.then(function(versions) {
+				u.nl();
+				console.log( c.cyan(versions.reverse().join('\n')) );
+				u.nl();
+			})
+		});
+
+
+	cmdr
 		.command('help [command]')
 		.description('Show usage information')
 		.action(function(cmd) {

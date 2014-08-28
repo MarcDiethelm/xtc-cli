@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.3.0 — 2014-xx-xx
+- New `command `xtc ls`. Lists versions published to npm.
+
 ## 0.2.2 — 2014-06-13
 - Fix issue #1 (install fails with `config is not defined`)
 
