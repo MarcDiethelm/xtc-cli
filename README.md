@@ -39,6 +39,7 @@ outputs this
     setup                  Launch project setup
     info                   Information about the project setup
     ls                     List xtc versions published to npm
+    doctor                 Check project setup, attempts fix if needed
     help [command]         Show usage information
 
   Options:

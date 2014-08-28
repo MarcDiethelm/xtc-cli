@@ -8,6 +8,7 @@
 
 'use strict';
 
+var path = require('path');
 var cmdr = require('commander');
 var c = require('chalk');
 var Liftoff = require('liftoff');
@@ -42,6 +43,9 @@ function handleArguments(env) {
 	var xtcMain = env.modulePath;
 	var xtcJson = env.modulePackage;
 	var xtcfile = env.configPath || 'xtcfile.json';
+
+	env.projectRoot = env.configBase;
+	env.xtcRoot = path.dirname(env.modulePath);
 
 
 	cmdr.version(require('../package').version);
@@ -382,6 +386,22 @@ function handleArguments(env) {
 				console.log( c.cyan(versions.reverse().join('\n')) );
 				u.nl();
 			})
+		});
+
+
+	cmdr
+		.command('doctor')
+		.description('Check project setup, attempts fix if needed')
+		.action(function(cmd) {
+
+			log('\nMust symlink the generator from xtc\'s modules up to the project\'s modules. Else Yeoman won\'t find it.');
+			log(c.cyan('Checking symlink...'));
+
+			u.doctorGeneratorSymlink(env)
+				.catch(function(err) {
+					//log(c.red(err.message));
+					u.trace(err);
+				})
 		});
 
 
