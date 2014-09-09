@@ -31,16 +31,36 @@ outputs this
 
   Commands:
 
-    start [options]        Starts the xtc server. Use `-p [number]` to force a port.
-    build [options]        Start frontend asset build. Use `-d` for production build to dist target.
-    mkmod [name]           Create new Terrific frontend modules
-    mkskin [name]          Create new skins for a Terrific frontend module
-    install                Install xtc and launch project setup
-    setup                  Launch project setup
-    info                   Information about the project setup
-    ls                     List xtc versions published to npm
-    doctor                 Check project setup, attempts fix if needed
-    help [command]         Show usage information
+    start [options]
+       Starts the xtc server. Use `-p [number]` to force a port.
+
+    build [options]
+       Start frontend asset build. Use `-d` for production build to dist target.
+
+    mkmod [name]
+       Create new Terrific frontend modules
+
+    mkskin [name]
+       Create new skins for a Terrific frontend module
+
+    install
+       Install xtc and launch project setup
+
+    setup
+       Launch project setup
+
+    info
+       Information about the project setup
+
+    ls
+       List xtc versions published to npm
+
+    doctor
+       Check project setup, attempts fix if needed
+
+    help [command]
+       Show usage information
+
 
   Options:
 
