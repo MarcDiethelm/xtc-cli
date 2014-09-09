@@ -38,7 +38,7 @@ looks very very interesting too. certainly better documented than commander.
 
 function handleArguments(env) {
 
-	//var argv = env.argv;
+	//var argv = env.argv._;
 	//var cliPackage = require('../package');
 	var xtcMain = env.modulePath;
 	var xtcJson = env.modulePackage;
@@ -99,15 +99,26 @@ function handleArguments(env) {
 
 
 	cmdr
-		.command('mkmod')
+		.command('mkmod [name]')
 		.description('Create new Terrific frontend modules')
-		.action(function(cmd) {
+		//.option('-d, --default', 'Ask no questions, just create a default module.')
+		.action(function(name, options) {
+
+			var args = ['xtc:module'];
+
+			if (name) {
+				args.push(name);
+			}
+
+			/*if (options.default) {
+				args.push('--default');
+			}*/
 
 			u.checkLocalXtc(env);
 			u.checkGeneratorSymlink(env, true)
 				.catch(handleSymlinkError)
 				.then(function() {
-			u.spawn('yo', ['xtc:module'], { stdio: 'inherit' })
+					u.spawn('yo', args, { stdio: 'inherit' })
 				.catch(u.fail)
 			;
 		});
@@ -115,15 +126,21 @@ function handleArguments(env) {
 
 
 	cmdr
-		.command('mkskin')
+		.command('mkskin [name]')
 		.description('Create new skins for a Terrific frontend module')
-		.action(function(cmd) {
+		.action(function(name, options) {
+
+			var args = ['xtc:skin'];
+
+			if (name) {
+				args.push(name);
+			}
 
 			u.checkLocalXtc(env);
 			u.checkGeneratorSymlink(env, true)
 				.catch(handleSymlinkError)
 				.then(function() {
-			u.spawn('yo', ['xtc:skin'], { stdio: 'inherit'})
+					u.spawn('yo', args, { stdio: 'inherit'})
 				.catch(u.fail)
 			;
 		});
