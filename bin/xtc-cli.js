@@ -119,9 +119,9 @@ function handleArguments(env) {
 				.catch(handleSymlinkError)
 				.then(function() {
 					u.spawn('yo', args, { stdio: 'inherit' })
-				.catch(u.fail)
-			;
-		});
+						.catch(u.fail)
+					;
+				});
 		});
 
 
@@ -141,9 +141,9 @@ function handleArguments(env) {
 				.catch(handleSymlinkError)
 				.then(function() {
 					u.spawn('yo', args, { stdio: 'inherit'})
-				.catch(u.fail)
-			;
-		});
+						.catch(u.fail)
+					;
+				});
 		});
 
 
@@ -362,10 +362,10 @@ function handleArguments(env) {
 			u.checkGeneratorSymlink(env, true)
 				.catch(handleSymlinkError)
 				.then(function() {
-			u.spawn('yo', ['xtc:app'], {stdio: 'inherit'})
-				.catch(u.fail)
-			;
-		});
+					u.spawn('yo', ['xtc:app'], {stdio: 'inherit'})
+						.catch(u.fail)
+					;
+				});
 		});
 
 
