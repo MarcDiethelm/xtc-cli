@@ -3,7 +3,7 @@
 ## 0.3.0 — 2014-09-09
 - New command `xtc doctor` checks and if needed attempts to fix the project setup. Currently fixes broken or missing symlink to generator-xtc.
 - Re-implemented and expanded generator-xtc symlinking code in xtc-cli.
-- New `command `xtc ls`. Lists versions published to npm.
+- New command `xtc ls`. Lists versions published to npm.
 - `xtc mkmod [name]` and `xtc mkskin [name]`. A name argument can now be passed to the generator.
 
 ## 0.2.2 — 2014-06-13
