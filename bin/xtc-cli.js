@@ -304,6 +304,17 @@ function handleArguments(env) {
 			)
 
 			///////////////////////////////////////////////////////////////////
+			// symlink generator-xtc
+			// from xtc modules to project modules so yeoman can find it
+			.then(function() {
+				log(c.magenta('\nCreating symlink/junction to generator...\n'));
+				return u.doctorGeneratorSymlink(env);
+			})
+			.catch(function(code) {
+				u.fail(code, 'I think something went wrong...');
+			})
+
+			///////////////////////////////////////////////////////////////////
 			// run project generator
 			.then(function() {
 				log(c.magenta('\nStarting project setup...\n'));

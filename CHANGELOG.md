@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.4.0 — 2014-09-xx
+- xtc install now creates symlink from project's node modules to xtc's node_modules, so Yeoman can find it.
+
 ## 0.3.0 — 2014-09-09
 - New command `xtc doctor` checks and if needed attempts to fix the project setup. Currently fixes broken or missing symlink to generator-xtc.
 - Re-implemented and expanded generator-xtc symlinking code in xtc-cli.
