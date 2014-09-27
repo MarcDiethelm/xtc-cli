@@ -294,7 +294,7 @@ function handleArguments(env) {
 
 				return u.spawn('npm', ['install', '--production'], {
 					stdio: 'inherit'
-				   ,cwd: './node_modules/generator-xtc'
+				   ,cwd: path.join(env.xtcRoot, 'node_modules/generator-xtc')
 				});
 			})
 			.then(function() {
