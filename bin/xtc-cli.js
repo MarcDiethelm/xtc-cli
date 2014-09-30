@@ -84,6 +84,8 @@ function handleArguments(env) {
 		.command('build')
 		.description('Start frontend asset build. Use `-d` for production build to dist target.')
 		.option('-d, --dist', 'Run build in distribution mode. Output is minified.')
+		.option('-v, --verbose', 'Run Grunt in verbose mode.')
+		.option('-D, --debug', 'Run Grunt in debug mode.')
 		.action(function(cmd) {
 
 			var xtcArgs = ['--base=./node_modules/xtc']
@@ -91,6 +93,8 @@ function handleArguments(env) {
 			;
 
 			u.checkLocalXtc(env);
+			cmd.verbose && xtcArgs.push('--verbose'); // there's a bug in grunt that requires this to be the first option.
+			cmd.debug && xtcArgs.push('--debug');
 			cmd.dist && xtcArgs.push('--dist');
 			u.spawn('grunt', xtcArgs, { stdio: 'inherit' })
 				.catch(u.fail)
