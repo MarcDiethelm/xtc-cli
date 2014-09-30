@@ -54,9 +54,9 @@ function handleArguments(env) {
 	cmdr
 		.command('help [command]')
 		.description('Show detailed usage information, e.g. `xtc help build`')
-		.action(function(cmd) {
-			'string' === typeof cmd
-				? cmdr.emit(cmd, null, ['--help'])
+		.action(function(command, options) {
+			command
+				? cmdr.emit(command, null, ['--help'])
 				: cmdr.outputHelp()
 			;
 			process.exit();
@@ -67,10 +67,8 @@ function handleArguments(env) {
 		.command('start')
 		.description('Starts the xtc server. Use `-p [number]` to force a port.')
 		.option('-p, --port [number]', 'Specify the port that xtc should listen on.')
-		.action(function(cmd) {
-			var xtcArgs
-				,projectJson
-			;
+		.action(function(options) {
+			var xtcArgs;
 
 			u.checkLocalXtc(env);
 
@@ -81,7 +79,7 @@ function handleArguments(env) {
 				xtcArgs = [xtcMain];
 			}
 
-			cmd.port && xtcArgs.push('--port='+ cmd.port);
+			options.port && xtcArgs.push('--port='+ options.port);
 			u.spawn(
 					'node'
 					,xtcArgs
@@ -98,16 +96,16 @@ function handleArguments(env) {
 		.option('-d, --dist', 'Run build in distribution mode. Output is minified.')
 		.option('-v, --verbose', 'Run Grunt in verbose mode.')
 		.option('-D, --debug', 'Run Grunt in debug mode.')
-		.action(function(cmd) {
+		.action(function(options) {
 
 			var xtcArgs = ['--base=./node_modules/xtc']
 				,grunt
 			;
 
 			u.checkLocalXtc(env);
-			cmd.verbose && xtcArgs.push('--verbose'); // there's a bug in grunt that requires this to be the first option.
-			cmd.debug && xtcArgs.push('--debug');
-			cmd.dist && xtcArgs.push('--dist');
+			options.verbose && xtcArgs.push('--verbose'); // there's a bug in grunt that requires this to be the first option.
+			options.debug && xtcArgs.push('--debug');
+			options.dist && xtcArgs.push('--dist');
 			u.spawn('grunt', xtcArgs, { stdio: 'inherit' })
 				.catch(u.fail)
 			;
@@ -166,7 +164,7 @@ function handleArguments(env) {
 	cmdr
 		.command('install')
 		.description('Install xtc and launch project setup')
-		.action(function(cmd) {
+		.action(function(options) {
 			var store = {};
 			var config = {
 				xtcSrc: {
@@ -382,7 +380,7 @@ function handleArguments(env) {
 	cmdr
 		.command('setup')
 		.description('Launch project setup') // does not install any dependencies
-		.action(function(cmd) {
+		.action(function(options) {
 
 			u.checkLocalXtc(env);
 
@@ -399,7 +397,7 @@ function handleArguments(env) {
 	cmdr
 		.command('info')
 		.description('Information about the project setup')
-		.action(function(cmd) {
+		.action(function(options) {
 			var info =
 				c.underline.cyan('\nproject information\n') +
 					'xtc version:\t %s\n'
@@ -426,7 +424,7 @@ function handleArguments(env) {
 	cmdr
 		.command('ls')// todo: this mostly duplicates the code in `install`. make DRY
 		.description('List xtc versions published to npm')
-		.action(function(cmd) {
+		.action(function(options) {
 
 			log('Getting list of xtc versions from npm...');
 			u.pkgInfo('xtc')
@@ -448,7 +446,7 @@ function handleArguments(env) {
 	cmdr
 		.command('doctor')
 		.description('Check project setup, attempts fix if needed')
-		.action(function(cmd) {
+		.action(function(options) {
 
 			log('\ngenerator-xtc must be linked from xtc\'s modules up to the project\'s modules. Else Yeoman won\'t find it.');
 			log(c.cyan('Checking symlink...'));
