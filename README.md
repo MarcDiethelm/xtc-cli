@@ -31,6 +31,9 @@ outputs this
 
   Commands:
 
+    help [command]
+       Show detailed usage information, e.g. `xtc help build`
+
     start [options]
        Starts the xtc server. Use `-p [number]` to force a port.
 
@@ -57,9 +60,6 @@ outputs this
 
     doctor
        Check project setup, attempts fix if needed
-
-    help [command]
-       Show usage information
 
 
   Options:

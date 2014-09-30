@@ -52,6 +52,18 @@ function handleArguments(env) {
 
 
 	cmdr
+		.command('help [command]')
+		.description('Show detailed usage information, e.g. `xtc help build`')
+		.action(function(cmd) {
+			'string' === typeof cmd
+				? cmdr.emit(cmd, null, ['--help'])
+				: cmdr.outputHelp()
+			;
+			process.exit();
+		});
+
+
+	cmdr
 		.command('start')
 		.description('Starts the xtc server. Use `-p [number]` to force a port.')
 		.option('-p, --port [number]', 'Specify the port that xtc should listen on.')
@@ -473,18 +485,6 @@ function handleArguments(env) {
 				}
 			}
 		});*/
-
-
-	cmdr
-		.command('help [command]')
-		.description('Show usage information')
-		.action(function(cmd) {
-			'string' === typeof cmd
-				? cmdr.emit(cmd, null, ['--help'])
-				: cmdr.outputHelp()
-			;
-			process.exit();
-		});
 
 
 	/*cmdr
