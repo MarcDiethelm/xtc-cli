@@ -44,8 +44,12 @@ function handleArguments(env) {
 	var xtcJson = env.modulePackage;
 	var xtcfile = env.configPath || 'xtcfile.json';
 
-	env.projectRoot = env.configBase;
-	env.xtcRoot = path.dirname(env.modulePath);
+	// Set default paths for first use before install
+	env.projectRoot = env.configBase || env.cwd;
+	env.xtcRoot = env.modulePath
+		? path.dirname(env.modulePath)
+		: path.join(env.cwd, 'node_modules/xtc')
+	;
 
 
 	cmdr.version(require('../package').version);
@@ -324,8 +328,8 @@ function handleArguments(env) {
 				log(c.magenta('\nCreating symlink/junction to generator...\n'));
 				return u.doctorGeneratorSymlink(env);
 			})
-			.catch(function(code) {
-				u.fail(code, 'I think something went wrong...');
+			.catch(function(err) {
+				u.fail(null, err);
 			})
 
 			///////////////////////////////////////////////////////////////////
@@ -334,8 +338,8 @@ function handleArguments(env) {
 				log(c.magenta('\nStarting project setup...\n'));
 				return u.spawn('yo', ['xtc:app'], { stdio: 'inherit'});
 			})
-			.catch(function(code) {
-				u.fail(code, 'I think something went wrong...');
+			.catch(function(err) {
+				u.fail(null, err);
 			})
 
 			///////////////////////////////////////////////////////////////////
@@ -528,4 +532,12 @@ cli.launch(handleArguments);
 
 function handleSymlinkError(err) {
 	u.fail(null, 'generator-xtc is not properly symlinked from xtc\'s modules to project modules.\nRun `xtc doctor` to attempt an automatic fix.');
+}
+
+/**
+ * @param {...string} [resolvePath] - Paths to resolve from env.xtcRoot
+ * @returns {string} -
+ */
+function pathXtc(resolvePath) {
+	return path.resolve(env.xtcRoot, resolvePath);
 }
