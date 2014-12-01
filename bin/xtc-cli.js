@@ -77,7 +77,7 @@ function handleArguments(env) {
 			u.checkLocalXtc(env);
 
 			if (semver.gte(xtcJson.version, '0.8.0-beta8')) {
-				xtcArgs = [u.readProjectJson().main, 'server.js'];
+				xtcArgs = [u.readProjectJson().main];
 			}
 			else {
 				xtcArgs = [xtcMain];

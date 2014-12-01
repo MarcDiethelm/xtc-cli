@@ -3,6 +3,7 @@
 ## 0.4.0 — 2014-09-xx
 - xtc install now creates symlink from project's node modules to xtc's node_modules, so Yeoman can find it.
 - xtc build accepts two new options `--verbose` and `--debug` which are passed to Grunt.
+- xtc start: xtc start: remove redundant arg to node spawn call
 
 ## 0.3.0 — 2014-09-09
 - New command `xtc doctor` checks and if needed attempts to fix the project setup. Currently fixes broken or missing symlink to generator-xtc.
