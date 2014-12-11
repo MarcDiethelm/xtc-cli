@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.4.1 — 2014-12-11
+- Fix a bug with wrong var names inside an error output.
+
 ## 0.4.0 — 2014-12-01
 - xtc install now creates symlink from project's node modules to xtc's node_modules, so Yeoman can find it.
 - xtc build accepts two new options `--verbose` and `--debug` which are passed to Grunt.
